@@ -1,0 +1,53 @@
+1) Uma empresa possui uma lista de códigos de produtos armazenada em um
+vetor. Os códigos não estão necessariamente organizados em ordem
+crescente. Implemente um programa que:
+Leia via input uma quantidade de códigos (10);
+Armazene os códigos em um vetor;
+Solicite ao usuário um código que deseja pesquisar;
+Utilize o algoritmo de Busca Sequencial para procurar o código;
+Informe se o código foi encontrado;
+Caso seja encontrado, informe sua posição no vetor;
+Informe também a quantidade de comparações realizadas durante a
+busca.
+
+2) Uma escola possui uma lista de números de matrícula que já está
+organizada em ordem crescente.
+Implemente um programa que:
+Coloque 15 valores em um vetor;
+Considere que os valores já estão ordenados;
+Solicite ao usuário uma matrícula para pesquisa;
+Utilize Busca Binária para localizar a matrícula;
+Informe a posição em que ela foi encontrada;
+Caso não seja encontrada, informe uma mensagem adequada;
+Mostre a quantidade de comparações realizadas.
+
+3) Uma loja deseja organizar os preços de seus produtos em ordem crescente.
+Implemente um programa que:
+Leia via input 10 preços;
+Armazene os preços em um vetor;
+Exiba os preços antes da ordenação;
+Ordene os valores utilizando o Bubble Sort;
+Exiba o vetor após a ordenação;
+Informe a quantidade de trocas realizadas pelo algoritmo.
+
+5) Uma biblioteca mantém uma lista de códigos de livros emprestados, não ordenada.
+Implemente um programa que:
+Leia via input 12 códigos de livros e armazene em um vetor;
+Solicite ao usuário um código para pesquisa;
+Utilize Busca Sequencial, mas interrompa a busca assim que encontrar o elemento (busca sequencial com parada antecipada);
+Informe a posição encontrada e o número de comparações;
+Caso o código não exista, informe quantas comparações foram feitas até percorrer todo o vetor.
+
+6) Uma equipe de TI quer saber se um determinado usuário está cadastrado em uma lista de e-mails corporativos (representados por números de ID).
+Implemente um programa que:
+Armazene 10 IDs em um vetor, não ordenados;
+Realize a Busca Sequencial de forma recursiva (função recursiva, sem laço explícito);
+Retorne a posição do ID ou -1 se não encontrado;
+Informe quantas chamadas recursivas foram necessárias.
+
+7) Uma competição de corrida registra o tempo (em segundos) de cada atleta em um vetor não ordenado.
+Implemente um programa que:
+Leia 8 tempos e armazene em um vetor;
+Peça ao usuário um tempo específico para verificar se algum atleta cruzou a linha exatamente nesse tempo;
+Utilize Busca Sequencial;
+Caso haja mais de uma ocorrência do mesmo valor no vetor, informe todas as posições em que o valor foi encontrado (não pare na primeira ocorrência).
