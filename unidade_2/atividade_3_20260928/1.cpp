@@ -125,6 +125,20 @@ void adicionarPeloIndex(No*& head, int index, int valorNovoNo){
 	aux -> sucessor = novoNo;
 }
 
+void inserirNoComecoMetodoNicolas(No* head, int dado){
+	No* novoNo = new No;
+	
+	novoNo -> valor = dado;
+	novoNo -> anterior = NULL;
+	novoNo -> sucessor = head;
+	
+	if(head != NULL){
+		head -> anterior = novoNo;
+	}
+	
+	head = novoNo;
+}
+
 int main(){
 	No* head = new No;
 	head -> sucessor = NULL;
@@ -154,5 +168,10 @@ int main(){
 	cout << "O index 4 deve ser o valor 90" << endl;
 	adicionarPeloIndex(head, 4, 90);
 	imprimirLista(head);
+	
+	cout << "Adicionando no comeco (Nicolas)" << endl;
+	inserirNoComecoMetodoNicolas(head, -1);
+	imprimirLista(head);
+
 	
 }
