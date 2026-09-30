@@ -33,7 +33,6 @@ int returnIndexFinal(No*& head){
 		atual = atual -> next;
 		indexFinal++;
 	}
-	cout << "index final = " << indexFinal << endl;
 	return indexFinal;
 }
 
@@ -47,14 +46,36 @@ int returnIndexMeio(No*& head){
 	cout << "valor do index do meio: " << atual -> value << endl;
 }
 
+bool valorExiste(No*& head, int alvo){
+	int indexFinal = returnIndexFinal(head);
+	
+	if(head -> value == alvo){
+		return true;
+	}
+	
+	No* atual = head -> next;
+	for(int i = 1; i <= indexFinal; i++){
+		if(atual -> value == alvo){
+			return true;
+		}
+		atual = atual -> next;
+	}
+	return false;
+}
+
 int main(){
 	No* head = new No;
 	head -> value = 1;
 	head -> next = NULL;
+	
 	inserirNoFinal(head, 2);
 	inserirNoFinal(head, 3);
 	inserirNoFinal(head, 4);
 	inserirNoFinal(head, 5);
 	inserirNoFinal(head, 6);
+	
 	returnIndexMeio(head);
+	
+	int alvo = 1;
+	cout << "O valor " << alvo << " esta presente no vetor? " << valorExiste(head, alvo) << endl; 
 }
