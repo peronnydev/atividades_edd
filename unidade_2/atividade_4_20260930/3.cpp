@@ -59,7 +59,7 @@ int main(){
 	inserir(head, 4);
 	inserir(head, 5);
 	
-	cout << "O valor 3 existe e será apagado." << endl;
+	cout << "O valor 3 existe e sera apagado." << endl;
 	apagarValor(head, 3);
 	if(pesquisarValor(head, 3) == -1){
 		cout << "O valor 3 foi apagado" << endl;
