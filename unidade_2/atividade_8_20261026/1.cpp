@@ -1,339 +1,256 @@
 #include <iostream>
 using namespace std;
 
-struct Conteudo {
-    string texto;
-    Conteudo* prox;
+struct Conteudo{
+	Conteudo* sucessor;
+	string nome;
 };
 
-struct Disciplina {
-    string nome;
-    int creditos;
-    Conteudo* conteudos;
-    Disciplina* prox;
+struct Disciplina{
+	Disciplina* sucessor;
+	Conteudo* conteudo;
+	string nome;
+	int quantidadeCreditos;
 };
 
-struct Aluno {
-    string nome;
-    string cpf;
-    int idade;
-    string matricula;
-    Disciplina* disciplinas;
-    Aluno* prox;
+struct Aluno{
+	Aluno* sucessor;
+	Disciplina* disciplina;
+	string nome;
+	string cpf;
+	int idade;
+	string matricula;
 };
 
-struct Fila {
-    Aluno* inicio;
-    Aluno* fim;
-    int tamanho;
-};
-
-Conteudo* buscarConteudo(Disciplina* d, string texto) {
-    Conteudo* aux = d->conteudos;
-    while (aux != NULL) {
-        if (aux->texto == texto) return aux;
-        aux = aux->prox;
-    }
-    return NULL;
+void listarConteudosDisciplina(Conteudo*& top){
+	for(Conteudo* aux = top; aux != NULL; aux = aux -> sucessor){
+		cout << "      " << aux -> nome << endl;
+	}
 }
 
-bool adicionarConteudo(Disciplina* d, string texto) {
-    if (d == NULL) return false;
-    if (buscarConteudo(d, texto) != NULL) return false;
-
-    Conteudo* novo = new Conteudo;
-    novo->texto = texto;
-    novo->prox = NULL;
-
-    if (d->conteudos == NULL) {
-        d->conteudos = novo;
-    } else {
-        Conteudo* aux = d->conteudos;
-        while (aux->prox != NULL) aux = aux->prox;
-        aux->prox = novo;
-    }
-    return true;
+void listarDisciplinasAluno(Disciplina*& top){
+	for(Disciplina* aux = top; aux != NULL; aux = aux -> sucessor){
+		cout << "    " << aux -> nome << endl;
+		listarConteudosDisciplina(aux -> conteudo);
+	}
 }
 
-bool removerConteudo(Disciplina* d, string texto) {
-    if (d == NULL) return false;
-    Conteudo* ant = NULL;
-    Conteudo* atual = d->conteudos;
-    while (atual != NULL && !(atual->texto == texto)) {
-        ant = atual;
-        atual = atual->prox;
-    }
-    if (atual == NULL) return false;
-
-    if (ant == NULL) d->conteudos = atual->prox;
-    else ant->prox = atual->prox;
-    delete atual;
-    return true;
+void listarAlunos(Aluno*& top){
+	for(Aluno* aux = top; aux != NULL; aux = aux -> sucessor){
+		cout << "  " << aux -> nome << endl;
+		listarDisciplinasAluno(aux -> disciplina);
+	}
 }
 
-void listarConteudos(Disciplina* d, const char* recuo) {
-    if (d->conteudos == NULL) {
-        cout << recuo << "(nenhum conteudo cadastrado)\n";
-        return;
-    }
-    int i = 1;
-    Conteudo* aux = d->conteudos;
-    while (aux != NULL) {
-        cout << recuo << i << ". " << aux->texto << "\n";
-        aux = aux->prox;
-        i++;
-    }
+void adicionarDisciplinaAluno(Aluno*& aluno, Disciplina* disciplina){
+	if(aluno == NULL || disciplina == NULL){
+		cout << "Erro: Aluno ou Disciplina nulo" << endl;
+		return;
+	}
+	
+	Disciplina* novaDisciplina = new Disciplina{
+		NULL,
+		disciplina -> conteudo,
+		disciplina -> nome,
+		disciplina -> quantidadeCreditos
+	};
+	
+	Disciplina* aux = aluno -> disciplina;
+	
+	if(aux == NULL){
+		aluno -> disciplina = novaDisciplina;
+		return;
+	}
+	
+	while(aux -> sucessor != NULL){
+		aux = aux -> sucessor;
+	}
+	
+	aux -> sucessor = novaDisciplina;
+	
+	return;
 }
 
-void liberarConteudos(Disciplina* d) {
-    Conteudo* aux = d->conteudos;
-    while (aux != NULL) {
-        Conteudo* prox = aux->prox;
-        delete aux;
-        aux = prox;
-    }
-    d->conteudos = NULL;
+void adicionarConteudoDisciplina(Disciplina*& disciplina, Conteudo* conteudo){
+	if(disciplina == NULL || conteudo == NULL){
+		cout << "Erro: disciplina ou conteudo nulo" << endl;
+		return;
+	}
+	
+	Conteudo* novoConteudo = new Conteudo{
+		NULL,
+		conteudo -> nome
+	};
+	
+	if(disciplina -> conteudo == NULL){
+		disciplina -> conteudo = novoConteudo;
+		return;
+	}
+	
+	Conteudo* aux = disciplina -> conteudo;
+	
+	while(aux -> sucessor != NULL){
+		aux = aux -> sucessor;
+	}
+	
+	aux -> sucessor = novoConteudo;
+	return;
 }
 
-Disciplina* buscarDisciplina(Aluno* a, string nome) {
-    Disciplina* aux = a->disciplinas;
-    while (aux != NULL) {
-        if (aux->nome == nome) return aux;
-        aux = aux->prox;
-    }
-    return NULL;
+void adicionarAluno(Aluno*& aluno, Aluno* novoAluno){
+	if(aluno == NULL || novoAluno == NULL){
+		cout << "Erro: Aluno ou novoAluno nulo" << endl;
+		return;
+	}
+	
+	Aluno* aux = aluno;
+	
+	while(aux -> sucessor != NULL){
+		aux = aux -> sucessor;
+	}
+	
+	aux -> sucessor = novoAluno;
+	return;
 }
 
-bool adicionarDisciplina(Aluno* a, string nome, int creditos) {
-    if (a == NULL) return false;
-    if (buscarDisciplina(a, nome) != NULL) return false;
-
-    Disciplina* nova = new Disciplina;
-    nova->nome = nome;
-    nova->creditos = creditos;
-    nova->conteudos = NULL;
-    nova->prox = NULL;
-
-    if (a->disciplinas == NULL) {
-        a->disciplinas = nova;
-    } else {
-        Disciplina* aux = a->disciplinas;
-        while (aux->prox != NULL) aux = aux->prox;
-        aux->prox = nova;
-    }
-    return true;
+void removerAluno(Aluno*& alunoTop, string matricula){
+	if(alunoTop -> matricula == matricula){
+		alunoTop = alunoTop -> sucessor;
+		return;
+	}
+	for(Aluno* aux = alunoTop; aux -> sucessor != NULL; aux = aux -> sucessor){
+		if(aux -> sucessor -> matricula == matricula){
+			aux -> sucessor = aux -> sucessor -> sucessor;
+			return;
+		}
+	}
+	cout << "Erro: Aluno para remover nao encontrado" << endl;
+	return;
 }
 
-bool removerDisciplina(Aluno* a, string nome) {
-    if (a == NULL) return false;
-    Disciplina* ant = NULL;
-    Disciplina* atual = a->disciplinas;
-    while (atual != NULL && !(atual->nome == nome)) {
-        ant = atual;
-        atual = atual->prox;
-    }
-    if (atual == NULL) return false;
-
-    if (ant == NULL) a->disciplinas = atual->prox;
-    else ant->prox = atual->prox;
-    liberarConteudos(atual);
-    delete atual;
-    return true;
+void removerDisciplina(Aluno*& alunoTop, string nome){
+	Disciplina*& disciplinaTop = alunoTop -> disciplina;
+	if(disciplinaTop -> nome == nome){
+		disciplinaTop = disciplinaTop -> sucessor;
+		return;
+	}
+	for(Disciplina* aux = disciplinaTop; aux -> sucessor != NULL; aux = aux -> sucessor){
+		if(aux -> sucessor -> nome == nome){
+			aux -> sucessor = aux -> sucessor -> sucessor;
+			return;
+		}
+	}
+	cout << "Erro: Disciplina para remover nao encontrada" << endl;
+	return;
 }
 
-void listarDisciplinas(Aluno* a) {
-    if (a->disciplinas == NULL) {
-        cout << "  (nenhuma disciplina cadastrada)\n";
-        return;
-    }
-    int i = 1;
-    Disciplina* aux = a->disciplinas;
-    while (aux != NULL) {
-        cout << "  " << i << ". " << aux->nome << " - " << aux->creditos << " credito(s)\n";
-        aux = aux->prox;
-        i++;
-    }
+void removerConteudo(Disciplina*& disciplinaTop, string nome){
+	Conteudo*& conteudoTop = disciplinaTop -> conteudo;
+	if(conteudoTop -> nome == nome){
+		conteudoTop = conteudoTop -> sucessor;
+		return;
+	}
+	for(Conteudo* aux = conteudoTop; aux -> sucessor != NULL; aux = aux -> sucessor){
+		if(aux -> sucessor -> nome == nome){
+			aux -> sucessor = aux -> sucessor -> sucessor;
+			return;
+		}
+	}
+	cout << "Coteudo para remover nao encontrado" << endl;
+	return;
 }
 
-void liberarDisciplinas(Aluno* a) {
-    Disciplina* aux = a->disciplinas;
-    while (aux != NULL) {
-        Disciplina* prox = aux->prox;
-        liberarConteudos(aux);
-        delete aux;
-        aux = prox;
-    }
-    a->disciplinas = NULL;
-}
-
-void inicializarFila(Fila& f) {
-    f.inicio = NULL;
-    f.fim = NULL;
-    f.tamanho = 0;
-}
-
-bool filaVazia(Fila& f) {
-    return f.inicio == NULL;
-}
-
-int tamanhoFila(Fila& f) {
-    return f.tamanho;
-}
-
-Aluno* buscarAluno(Fila& f, string matricula) {
-    Aluno* aux = f.inicio;
-    while (aux != NULL) {
-        if (aux->matricula == matricula) return aux;
-        aux = aux->prox;
-    }
-    return NULL;
-}
-
-bool enfileirar(Fila& f, string nome, string cpf, int idade, string matricula) {
-    if (buscarAluno(f, matricula) != NULL) return false;
-
-    Aluno* novo = new Aluno;
-    novo->nome = nome;
-    novo->cpf = cpf;
-    novo->idade = idade;
-    novo->matricula = matricula;
-    novo->disciplinas = NULL;
-    novo->prox = NULL;
-
-    if (filaVazia(f)) f.inicio = novo;
-    else f.fim->prox = novo;
-    f.fim = novo;
-    f.tamanho++;
-    return true;
-}
-
-bool desenfileirar(Fila& f) {
-    if (filaVazia(f)) return false;
-    Aluno* removido = f.inicio;
-    f.inicio = removido->prox;
-    if (f.inicio == NULL) f.fim = NULL;
-    liberarDisciplinas(removido);
-    delete removido;
-    f.tamanho--;
-    return true;
-}
-
-Aluno* frente(Fila& f) {
-    return f.inicio;
-}
-
-Aluno* fimFila(Fila& f) {
-    return f.fim;
-}
-
-void mostrarDadosAluno(Aluno* a) {
-    cout << "Nome: " << a->nome << " | CPF: " << a->cpf
-         << " | Idade: " << a->idade << " | Matricula: " << a->matricula << "\n";
-}
-
-void exibirFila(Fila& f) {
-    if (filaVazia(f)) {
-        cout << "Fila vazia.\n";
-        return;
-    }
-    int pos = 1;
-    Aluno* aux = f.inicio;
-    while (aux != NULL) {
-        cout << pos << "o: ";
-        mostrarDadosAluno(aux);
-        aux = aux->prox;
-        pos++;
-    }
-}
-
-void listarTudo(Fila& f) {
-    if (filaVazia(f)) {
-        cout << "Fila vazia.\n";
-        return;
-    }
-    int pos = 1;
-    Aluno* a = f.inicio;
-    while (a != NULL) {
-        cout << "\n[" << pos << "] ";
-        mostrarDadosAluno(a);
-        if (a->disciplinas == NULL) {
-            cout << "  (nenhuma disciplina cadastrada)\n";
-        } else {
-            Disciplina* d = a->disciplinas;
-            while (d != NULL) {
-                cout << "  - " << d->nome << " (" << d->creditos << " credito(s))\n";
-                listarConteudos(d, "      ");
-                d = d->prox;
-            }
-        }
-        a = a->prox;
-        pos++;
-    }
-}
-
-void liberarFila(Fila& f) {
-    while (!filaVazia(f)) desenfileirar(f);
-}
-
-int main() {
-    Fila fila;
-    inicializarFila(fila);
-
-    enfileirar(fila, "Ana Souza", "111.222.333-44", 20, "2024001");
-    enfileirar(fila, "Bruno Lima", "555.666.777-88", 22, "2024002");
-    enfileirar(fila, "Carla Mendes", "999.888.777-66", 19, "2024003");
-
-    cout << "=== Fila ===\n";
-    exibirFila(fila);
-    cout << "Tamanho: " << tamanhoFila(fila) << "\n";
-    cout << "Primeiro: ";
-    mostrarDadosAluno(frente(fila));
-    cout << "Ultimo: ";
-    mostrarDadosAluno(fimFila(fila));
-
-    Aluno* ana = buscarAluno(fila, "2024001");
-    Aluno* bruno = buscarAluno(fila, "2024002");
-
-    adicionarDisciplina(ana, "Estrutura de Dados", 4);
-    adicionarDisciplina(ana, "Calculo I", 6);
-    adicionarDisciplina(bruno, "Programacao Orientada a Objetos", 4);
-
-    Disciplina* ed = buscarDisciplina(ana, "Estrutura de Dados");
-    adicionarConteudo(ed, "Filas");
-    adicionarConteudo(ed, "Pilhas");
-    adicionarConteudo(ed, "Listas encadeadas");
-
-    Disciplina* calc = buscarDisciplina(ana, "Calculo I");
-    adicionarConteudo(calc, "Limites");
-    adicionarConteudo(calc, "Derivadas");
-
-    Disciplina* poo = buscarDisciplina(bruno, "Programacao Orientada a Objetos");
-    adicionarConteudo(poo, "Classes e objetos");
-    adicionarConteudo(poo, "Heranca");
-
-    cout << "\n=== Disciplinas de " << ana->nome << " ===\n";
-    listarDisciplinas(ana);
-
-    cout << "\n=== Conteudos de " << ed->nome << " ===\n";
-    listarConteudos(ed, "  ");
-
-    removerConteudo(ed, "Pilhas");
-    cout << "\n=== Conteudos de " << ed->nome << " apos remover Pilhas ===\n";
-    listarConteudos(ed, "  ");
-
-    removerDisciplina(ana, "Calculo I");
-    cout << "\n=== Disciplinas de " << ana->nome << " apos remover Calculo I ===\n";
-    listarDisciplinas(ana);
-
-    cout << "\n=== Todos os alunos ===";
-    listarTudo(fila);
-
-    desenfileirar(fila);
-    cout << "\n=== Todos os alunos apos desenfileirar ===";
-    listarTudo(fila);
-
-    liberarFila(fila);
-    cout << "\nFila vazia? " << (filaVazia(fila) ? "Sim" : "Nao") << "\n";
-
-    return 0;
+int main(){
+	Disciplina* edd = new Disciplina{
+		NULL,
+		NULL,
+		"Estrutura de dados",
+		8
+	};
+	
+	Disciplina* poo = new Disciplina{
+		NULL,
+		NULL,
+		"Programacao Orientada a Objetos",
+		8
+	};
+	
+	Disciplina* db = new Disciplina{
+		NULL,
+		NULL,
+		"Banco de Dados",
+		6
+	};
+	
+	Conteudo* c1 = new Conteudo{NULL, "Ponteiros"};
+	Conteudo* c2 = new Conteudo{NULL, "Lista"};
+	Conteudo* c3 = new Conteudo{NULL, "Fila"};
+	Conteudo* c4 = new Conteudo{NULL, "Pilha"};
+	
+	Conteudo* c5 = new Conteudo{NULL, "Classes"};
+	Conteudo* c6 = new Conteudo{NULL, "Objetos"};
+	Conteudo* c7 = new Conteudo{NULL, "Polimorfismo"};
+	Conteudo* c8 = new Conteudo{NULL, "Eranca"};
+	
+	Conteudo* c9 = new Conteudo{NULL, "Select"};
+	Conteudo* c10 = new Conteudo{NULL, "Join"};
+	Conteudo* c11 = new Conteudo{NULL, "Where"};
+	Conteudo* c12 = new Conteudo{NULL, "Tables"};
+	
+	
+	adicionarConteudoDisciplina(edd, c1);
+	adicionarConteudoDisciplina(edd, c2);
+	adicionarConteudoDisciplina(edd, c3);
+	adicionarConteudoDisciplina(edd, c4);
+	
+	adicionarConteudoDisciplina(poo, c5);
+	adicionarConteudoDisciplina(poo, c6);
+	adicionarConteudoDisciplina(poo, c7);
+	adicionarConteudoDisciplina(poo, c8);
+	
+	adicionarConteudoDisciplina(db, c9);
+	adicionarConteudoDisciplina(db, c10);
+	adicionarConteudoDisciplina(db, c11);
+	adicionarConteudoDisciplina(db, c12);
+	
+	Aluno* peronny = new Aluno{
+		NULL,
+		NULL,
+		"Peronny",
+		"12312312312",
+		20,
+		"1"
+	};
+	
+	Aluno* kailany = new Aluno{
+		NULL,
+		NULL,
+		"Kailany",
+		"45645645645",
+		24,
+		"2"
+	};
+	
+	Aluno* samurai = new Aluno{
+		NULL,
+		NULL,
+		"Samurai",
+		"78978978978",
+		14,
+		"3"
+	};
+	
+	adicionarAluno(peronny, kailany);
+	adicionarAluno(peronny, samurai);
+	
+	adicionarDisciplinaAluno(peronny, edd);
+	adicionarDisciplinaAluno(peronny, db);
+	adicionarDisciplinaAluno(kailany, edd);
+	adicionarDisciplinaAluno(kailany, db);
+	adicionarDisciplinaAluno(kailany, poo);
+	adicionarDisciplinaAluno(samurai, db);
+	
+	removerDisciplina(kailany, "Banco de Dados");
+	removerAluno(peronny, "3");
+	listarAlunos(peronny);
 }
